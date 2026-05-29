@@ -1,20 +1,19 @@
-name: ModelScope Keep-Alive
+name: Spaces Keepalive
 
 on:
-  push:
-    branches: [main]
   schedule:
-    # 每 5 分钟触发一次（UTC 时间）
     - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
-  ping:
+  keepalive:
     runs-on: ubuntu-latest
     steps:
       - name: Ping ModelScope Space
         run: |
-          SPACE_URL="https://modelscope.cn/studios/is3610303/openclaw-computer"
-          echo "Pinging $SPACE_URL at $(date)"
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$SPACE_URL" || echo "FAIL")
-          echo "Response: HTTP $HTTP_CODE"
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://modelscope.cn/studios/is3610303/hermes_computer")
+          echo "HTTP ${HTTP_CODE}"
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning ::Unexpected status ${HTTP_CODE}"
+          fi
